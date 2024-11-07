@@ -2,6 +2,7 @@ const readlineSync = require('readline-sync');
 const fs = require('fs');
 const path = require('path');
 const Papa = require('papaparse');
+const execSync = require('child_process').execSync;
 
 let config;
 let categories = [];
@@ -28,6 +29,7 @@ function loadCategories() {
     categories = loadCSV(config.csvPaths.categories);
 }
 
+// Display items in pages for selection
 function displayItemList(page, itemsPerPage) {
     const startIndex = page * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -44,6 +46,7 @@ function displayItemList(page, itemsPerPage) {
     }
 }
 
+// Select an item from the list
 function selectItem() {
     const itemsPerPage = 50;
     let page = 0;
@@ -76,20 +79,22 @@ function selectItem() {
     }
 }
 
+// Get rarity for an item
 function getItemRarity() {
     const rarities = ['common', 'uncommon', 'rare', 'superior', 'legendary'];
     const rarityChoice = readlineSync.keyInSelect(rarities, 'Select item rarity');
     return rarities[rarityChoice] || 'common';
 }
 
+// Get level for an item
 function getItemLevel() {
-    const level = readlineSync.questionInt('Enter item level (e.g., 10): ', {
-        limit: '$<1000',
-        limitMessage: 'Please enter a valid level (1-1000).'
+    return readlineSync.questionInt('Enter item level (1-30): ', {
+        limit: '$<30',
+        limitMessage: 'Please enter a valid level (1-30).'
     });
-    return level;
 }
 
+// Get count if the item is stackable
 function getItemCount(category) {
     if (stackableCategories.includes(category)) {
         return readlineSync.questionInt('Enter item count (default is 1): ', {
@@ -102,39 +107,65 @@ function getItemCount(category) {
     }
 }
 
+// Generate command for adding an item
 function generateAddItemCommand(item) {
-    const rarity = getItemRarity();
-    const level = getItemLevel();
+    const isAmmoArchetype = item.category === 'AmmoArchetype';
+    const rarity = isAmmoArchetype ? null : getItemRarity();  // Skip rarity for AmmoArchetype
+    const level = isAmmoArchetype ? null : getItemLevel();    // Skip level for AmmoArchetype
     const count = getItemCount(item.category);
 
-    let command = `di2save player inventory add --file ${config.saveFilePath} --name ${item.name} --rarity ${rarity} --level ${level}`;
+    let command = `di2save player inventory add --file ${config.saveFilePath} --name ${item.name}`;
+
+    // Only add rarity and level for non-AmmoArchetype items
+    if (!isAmmoArchetype && rarity) {
+        command += ` --rarity ${rarity}`;
+    }
+    if (!isAmmoArchetype && level) {
+        command += ` --level ${level}`;
+    }
+
+    // Add count for all items (including AmmoArchetype)
     if (count) {
         command += ` --count ${count}`;
     }
+
+    // Append --no-version-safety to the command
+    command += " --no-version-safety";
 
     console.log('\nGenerated command:');
     console.log(command);
     return command;
 }
 
+
+// Generate command for editing an item
 function generateEditItemCommand(item) {
+    const itemId = readlineSync.question('Enter the item ID to edit: ').trim();
+    if (!itemId) {
+        console.log('Error: Item ID is required.');
+        return null;
+    }
+
     const rarity = getItemRarity();
     const level = getItemLevel();
     const count = getItemCount(item.category);
-    const itemId = readlineSync.question('Enter the item ID to edit: ').trim();
 
     let command = `di2save player inventory edit --file ${config.saveFilePath} --item ${itemId} --rarity ${rarity} --level ${level}`;
     if (count) {
         command += ` --count ${count}`;
     }
 
+    // Append --no-version-safety to the command
+    command += " --no-version-safety";
+
     console.log('\nGenerated command for editing:');
     console.log(command);
     return command;
 }
 
+
+// Execute the generated command
 function executeCommand(command) {
-    const execSync = require('child_process').execSync;
     try {
         execSync(command, { stdio: 'inherit' });
         console.log('Command executed successfully!');
@@ -143,6 +174,7 @@ function executeCommand(command) {
     }
 }
 
+// Main menu and program flow
 function main() {
     loadConfig();
     loadItems();
@@ -161,7 +193,7 @@ function main() {
         if (item) {
             const command = generateAddItemCommand(item);
             const execute = readlineSync.keyInYNStrict('Do you want to execute this command?');
-            if (execute) {
+            if (execute && command) {
                 executeCommand(command);
             } else {
                 console.log('Command execution canceled.');
@@ -172,7 +204,7 @@ function main() {
         if (item) {
             const command = generateEditItemCommand(item);
             const execute = readlineSync.keyInYNStrict('Do you want to execute this command?');
-            if (execute) {
+            if (execute && command) {
                 executeCommand(command);
             } else {
                 console.log('Command execution canceled.');
