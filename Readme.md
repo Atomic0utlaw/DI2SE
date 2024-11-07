@@ -34,60 +34,69 @@ If you don’t have Node.js installed, follow these steps:
 
 In the extracted folder, open a terminal (or Command Prompt on Windows) and run the following command to install the required Node.js dependencies:
 
-```bash
+```
 npm install
+```
+
 This will install readline-sync and any other necessary dependencies.
 
-Step 4: Configure the Tool
+### Step 4: Configure the Tool
+
 Place your save file (ue4savegame.ps4.sav) in the project directory.
 Make sure the CSV files (Items.csv, Weapon_Types.csv, Categories.csv, Rarities.csv) are in the same directory or update the paths in config.json if they are stored elsewhere.
-Step 5: Running the Tool
+
+### Step 5: Running the Tool
 Once the dependencies are installed and everything is set up, run the following command in the terminal to start the tool:
 
-bash
-Copy code
+```
 npm start
+```
+
 You will be presented with a menu to choose actions like adding, removing, or editing items in your inventory.
 
-Usage
-Menu Options
-Add an item to inventory: Add an item from the available categories and weapons.
-Remove an item from inventory: Remove an item by its entry ID.
-Edit an item in inventory: Modify an existing item’s attributes such as rarity, level, and durability.
-Exit: Exit the tool.
-Follow the on-screen prompts to generate the appropriate command.
+## Usage
+- Menu Options
+- Add an item to inventory: Add an item from the available categories and weapons.
+- Remove an item from inventory: Remove an item by its entry ID.
+- Edit an item in inventory: Modify an existing item’s attributes such as rarity, level, and durability.
+- Exit: Exit the tool.
+
+### Follow the on-screen prompts to generate the appropriate command.
 
 Example Commands
 Add an item:
 
-bash
-Copy code
+```
 di2save player inventory add --file ue4savegame.ps4.sav --name "Item Name" --type "Weapon Type" --rarity "Rare" --level 10 --no-version-safety
+```
+
 Remove an item:
 
-bash
-Copy code
+```
 di2save player inventory rm --file ue4savegame.ps4.sav 12345 --no-version-safety
+```
+
 Edit an item:
 
-bash
-Copy code
+```
 di2save player inventory edit --file ue4savegame.ps4.sav --item 12345 --seed 56789 --rarity "Epic" --level 15 --durability 100 --no-version-safety
-Troubleshooting
+```
+
+## Troubleshooting
 Issue: The tool doesn’t start.
-
 Solution: Make sure Node.js is installed correctly and dependencies are up to date by running npm install.
-Issue: Incorrect item/category data.
 
+Issue: Incorrect item/category data.
 Solution: Ensure your CSV files are correctly formatted and located in the correct directory.
-Contributing
+
+## Contributing
 If you'd like to contribute, feel free to fork the repository, create a new branch, and submit a pull request.
 
-To Do:
- Add more advanced inventory management features.
- Include additional configuration options for customizing the save file path and CSV locations.
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## To Do:
+- Add more advanced inventory management features.
+- Include additional configuration options for customizing the save file path and CSV locations.
+- License
+- This project is licensed under the MIT License - see the LICENSE file for details.
 
 Enjoy your modified Dead Island 2 save game!
 
