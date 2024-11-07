@@ -2,11 +2,11 @@ const readlineSync = require('readline-sync');
 const fs = require('fs');
 const path = require('path');
 const Papa = require('papaparse');
-const { execSync } = require('child_process');
 
 let config;
 let categories = [];
 let items = [];
+let stackableCategories = ['Ammo', 'Consumables', 'Recipes', 'Ingredients'];
 
 // Load config and CSV files
 function loadConfig() {
@@ -90,62 +90,54 @@ function getItemLevel() {
     return level;
 }
 
-function getItemCount() {
-    const count = readlineSync.questionInt('Enter item count (default is 1): ', {
-        defaultInput: 1,
-        limit: '$<10000',
-        limitMessage: 'Please enter a valid count (1-10000).'
-    });
-    return count;
-}
-
-function getSeed() {
-    const seed = readlineSync.questionInt('Enter item seed (default is 0): ', {
-        defaultInput: 0,
-        limit: '$<10000',
-        limitMessage: 'Please enter a valid seed (0-10000).'
-    });
-    return seed;
+function getItemCount(category) {
+    if (stackableCategories.includes(category)) {
+        return readlineSync.questionInt('Enter item count (default is 1): ', {
+            defaultInput: 1,
+            limit: '$<10000',
+            limitMessage: 'Please enter a valid count (1-10000).'
+        });
+    } else {
+        return null;  // No count needed for non-stackable items
+    }
 }
 
 function generateAddItemCommand(item) {
     const rarity = getItemRarity();
     const level = getItemLevel();
-    const count = getItemCount();
-    
-    const command = `di2save player inventory add --file ${config.saveFilePath} --name ${item.name} --rarity ${rarity} --level ${level} --count ${count}`;
-    
+    const count = getItemCount(item.category);
+
+    let command = `di2save player inventory add --file ${config.saveFilePath} --name ${item.name} --rarity ${rarity} --level ${level}`;
+    if (count) {
+        command += ` --count ${count}`;
+    }
+
     console.log('\nGenerated command:');
     console.log(command);
     return command;
 }
 
 function generateEditItemCommand(item) {
-    const seed = getSeed();
     const rarity = getItemRarity();
     const level = getItemLevel();
-    const count = getItemCount();
-    
-    const command = `di2save player inventory edit --file ${config.saveFilePath} --item ${item.name} --seed ${seed} --rarity ${rarity} --level ${level} --count ${count}`;
-    
-    console.log('\nGenerated command:');
+    const count = getItemCount(item.category);
+    const itemId = readlineSync.question('Enter the item ID to edit: ').trim();
+
+    let command = `di2save player inventory edit --file ${config.saveFilePath} --item ${itemId} --rarity ${rarity} --level ${level}`;
+    if (count) {
+        command += ` --count ${count}`;
+    }
+
+    console.log('\nGenerated command for editing:');
     console.log(command);
     return command;
 }
 
-function executeAddItemCommand(command) {
+function executeCommand(command) {
+    const execSync = require('child_process').execSync;
     try {
         execSync(command, { stdio: 'inherit' });
-        console.log('Item added successfully!');
-    } catch (error) {
-        console.error('Error executing the command:', error.message);
-    }
-}
-
-function executeEditItemCommand(command) {
-    try {
-        execSync(command, { stdio: 'inherit' });
-        console.log('Item edited successfully!');
+        console.log('Command executed successfully!');
     } catch (error) {
         console.error('Error executing the command:', error.message);
     }
@@ -159,38 +151,35 @@ function main() {
     console.log('Welcome to the Dead Island 2 Save Editor Command Generator!');
     console.log('Choose an action:');
     console.log('1. Add an item to inventory');
-    console.log('2. Edit an item in inventory');
+    console.log('2. Edit an existing item in inventory');
     console.log('3. Exit');
     
     const choice = readlineSync.question('Enter your choice: ').trim();
 
     if (choice === '1') {
-        // Add an item to inventory
         const item = selectItem();
         if (item) {
             const command = generateAddItemCommand(item);
             const execute = readlineSync.keyInYNStrict('Do you want to execute this command?');
             if (execute) {
-                executeAddItemCommand(command);
+                executeCommand(command);
             } else {
                 console.log('Command execution canceled.');
             }
         }
     } else if (choice === '2') {
-        // Edit an item in inventory
         const item = selectItem();
         if (item) {
             const command = generateEditItemCommand(item);
             const execute = readlineSync.keyInYNStrict('Do you want to execute this command?');
             if (execute) {
-                executeEditItemCommand(command);
+                executeCommand(command);
             } else {
                 console.log('Command execution canceled.');
             }
         }
     } else if (choice === '3') {
         console.log('Exiting...');
-        return;
     } else {
         console.log('Invalid choice.');
     }
