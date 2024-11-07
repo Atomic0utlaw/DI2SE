@@ -1,0 +1,10 @@
+name,ui_name
+DA_InventoryCategory_Weapons,Weapons
+DA_InventoryCategory_Throwables,Throwables
+DA_InventoryCategory_Ammo,Ammo
+DA_InventoryCategory_KeyItems,KeyItems
+DA_InventoryCategory_Consumables,Consumables
+DA_InventoryCategory_Collectable,Collectable
+DA_InventoryCategory_Recipes,Recipes
+DA_InventoryCategory_Ingredients,Ingredients
+DA_InventoryCategory_Special,Special

@@ -1,0 +1,10 @@
+{
+  "saveFilePath": "ue4savegame.ps4.sav",
+  "csvPaths": {
+    "rarities": "csv/Rarities.csv",
+    "weaponTypes": "csv/Weapon_Types.csv",
+    "categories": "csv/Categories.csv",
+    "items": "csv/Items.csv"
+	
+  }
+}
