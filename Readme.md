@@ -13,7 +13,7 @@ Welcome to the **Dead Island 2 Save Editor Command Generator**! This tool allows
 Before you can use this tool, make sure you have the following:
 
 - [Node.js](https://nodejs.org/) installed on your system (version 14.x or higher).
-- Your Dead Island 2 save game file (e.g., `ue4savegame.ps4.sav`).
+- Your *DECRYPTED* Dead Island 2 save game file (e.g., `ue4savegame.ps4.sav`).
 - CSV files containing item data (`Items.csv`, `Weapon_Types.csv`, `Categories.csv`, `Rarities.csv`).
 
 ## Setup Instructions
