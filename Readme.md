@@ -27,7 +27,7 @@ If you don’t have Node.js installed, follow these steps:
 
 ### Step 2: Download and Extract the Tool
 
-1. [Download the tool](your-download-link-here).
+1. [Download this tool]((https://github.com/Atomic0utlaw/DI2SE/archive/refs/heads/main.zip)).
 2. Extract the contents to a folder of your choice.
 
 ### Step 3: Install Dependencies
