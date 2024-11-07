@@ -111,5 +111,3 @@ Copy code
 - **Example Commands**: Provides sample commands the user can expect when using the tool.
 - **Troubleshooting**: Offers solutions for common issues.
 - **Contributing**: Allows other developers to contribute or track features still to be added.
-
-This `README.md` is designed for GitHub and provides a clear, step-by-step gui
